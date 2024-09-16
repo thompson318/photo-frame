@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: "Thompson"
+    given-names: "Stephen"
+    email: "stephen.thompson@ucl.ac.uk"
+repository-code: "https://github.com/thompson318/photoframe"
+title: "photoframe: A photo frame"
+license: "GPL-3.0"
