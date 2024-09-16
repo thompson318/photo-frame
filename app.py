@@ -2,7 +2,8 @@ import time
 from flask import Flask, jsonify
 from multiprocessing import Process, Value
 
-from src.photoframe.fileio import find_photos
+from src.photoframe.fileio import photolist 
+from src.photoframe.image_process import to_display 
 
 app = Flask(__name__)
 
@@ -28,18 +29,17 @@ def get_tasks():
    return jsonify({'tasks': tasks})
 
 
-def record_loop(loop_on):
+def record_loop(photolist):
    while True:
-      if loop_on.value == True:
-         print("loop running")
+      photo = photolist.random_photo()
+      print(f"got {photo}")
+      image_to_display = to_display(photo)
       time.sleep(1)
 
 
 if __name__ == "__main__":
-   photolist = find_photos()
-   print ("found ", photolist)
-   recording_on = Value('b', True)
-   p = Process(target=record_loop, args=(recording_on,))
+   photos = photolist()
+   p = Process(target=record_loop, args=(photos,))
    p.start()  
    app.run(debug=True, use_reloader=False)
    p.join()
