@@ -19,6 +19,8 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
+    "Flask", 
+    "opencv-python-headless"
 ]
 description = "A photo frame"
 dynamic = [
