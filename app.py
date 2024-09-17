@@ -4,6 +4,7 @@ from multiprocessing import Process, Value
 
 from src.photoframe.fileio import photolist 
 from src.photoframe.image_process import to_display 
+from src.photoframe.display import display 
 
 app = Flask(__name__)
 
@@ -29,17 +30,22 @@ def get_tasks():
    return jsonify({'tasks': tasks})
 
 
-def record_loop(photolist):
+def record_loop(photolist, display):
+   
+   frame_size = [1920, 1080]
+   border_size = [100, 100]
    while True:
       photo = photolist.random_photo()
       print(f"got {photo}")
-      image_to_display = to_display(photo)
+      image_to_display = to_display(photo, frame_size, border_size)
+      display.show(image_to_display)
       time.sleep(1)
 
 
 if __name__ == "__main__":
    photos = photolist()
-   p = Process(target=record_loop, args=(photos,))
+   display = display()
+   p = Process(target=record_loop, args=(photos,display))
    p.start()  
    app.run(debug=True, use_reloader=False)
    p.join()

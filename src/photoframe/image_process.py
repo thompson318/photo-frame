@@ -1,6 +1,7 @@
 import cv2
+import numpy as np
 
-def to_display(filename):
+def to_display(filename, frame_size, border_size):
     """ 
     Loads an image from disc, resizes it, adds a frame
     """
@@ -8,11 +9,17 @@ def to_display(filename):
     image = cv2.imread(filename)
     print (f"Read {filename}", end = " ")
     
-    image = _resize_and_crop(image)
+    image = _resize_and_crop(image, frame_size, border_size)
+
+    cv2.imwrite(f"{filename}.cropped.jpg", image)
 
 
-def _resize_and_crop(image, frame_size = [1920, 1080], 
-        border_size = [100, 100]):
+    bevel_size = [10, 10]
+    frame = make_frame(frame_size, border_size,bevel_size, [image.shape[1], image.shape[0]])
+    return image
+
+def _resize_and_crop(image, frame_size, 
+        border_size):
     height, width, channels = image.shape
 
     print (f"{height} {width} {channels}")
@@ -37,7 +44,25 @@ def _resize_and_crop(image, frame_size = [1920, 1080],
 
     print(f"Scaled to {scaled_image.shape}")
 
+    height, width, channels = scaled_image.shape
     #if it's landscape scale to fit width then crop top and bottom if required
     #if it's portrait scale to fit height, no need to crop.
+    oversize = height - target_size[1] 
+    if oversize%2 != 0:
+        oversize = oversize+1
+    cropped_image = scaled_image[oversize//2:height-oversize//2,:,:]
 
-    return image
+    height, width, channels = cropped_image.shape
+    assert height == target_size[1]
+    assert width <= target_size[0]
+    return cropped_image
+
+def make_frame(frame_size, border_size, bevel_size, image_size):
+    # plan. Make a blank image x by y. Draw four triangles from just beyond the image corners to the middle. Top triangle is slightly darker than the others.
+    # fill outside with rectangals. 
+    # optional: blurred lines through corners?
+    
+    blank_image = np.zeros((frame_size[0],frame_size[1],3), np.uint8)
+    image_top = (frame_size[0] - image_size[0]) // 2
+    #top_bevel = np.array([frame_size
+    return

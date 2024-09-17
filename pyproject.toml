@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     "Flask", 
-    "opencv-python-headless"
+    "opencv-python",
 ]
 description = "A photo frame"
 dynamic = [
