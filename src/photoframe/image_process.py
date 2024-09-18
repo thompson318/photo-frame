@@ -16,7 +16,7 @@ def to_display(filename, frame_size, border_size):
 
     bevel_size = [10, 10]
     frame = make_frame(frame_size, border_size,bevel_size, [image.shape[1], image.shape[0]])
-    return image
+    return frame
 
 def _resize_and_crop(image, frame_size, 
         border_size):
@@ -64,5 +64,19 @@ def make_frame(frame_size, border_size, bevel_size, image_size):
     
     blank_image = np.zeros((frame_size[0],frame_size[1],3), np.uint8)
     image_top = (frame_size[0] - image_size[0]) // 2
-    #top_bevel = np.array([frame_size
-    return
+    image_bottom = frame_size[0] - (frame_size[0] - image_size[0]) // 2
+    image_right = (frame_size[1] - image_size[1]) // 2
+    image_left = frame_size[1] - (frame_size[1] - image_size[1]) // 2
+    
+    bevel_top = image_top - bevel_size[0]
+    bevel_bottom = image_bottom + bevel_size[0]
+    bevel_right = image_right + bevel_size[1]
+    bevel_left = image_left - bevel_size[1]
+
+    image_centre = ( frame_size[0]//2, frame_size[1]//2)
+    top_bevel = np.array([(bevel_top, bevel_left), image_centre, (bevel_top, bevel_right)])
+    print(f"Top bevel = {top_bevel}")
+
+    #cv2.drawContours(blank_image, top_bevel, -1, (0,255,0), 3)
+    cv2.drawContours(blank_image,[(0,0),(1000,1000),(1000,0)],0,(0,255,0),3)
+    return blank_image
