@@ -77,6 +77,8 @@ def make_frame(frame_size, border_size, bevel_size, image_size):
     top_bevel = np.array([(bevel_top, bevel_left), image_centre, (bevel_top, bevel_right)])
     print(f"Top bevel = {top_bevel}")
 
-    #cv2.drawContours(blank_image, top_bevel, -1, (0,255,0), 3)
-    cv2.drawContours(blank_image,[(0,0),(1000,1000),(1000,0)],0,(0,255,0),3)
+    corners = np.array([image_centre,
+        (bevel_top, bevel_left),
+        (bevel_top,bevel_left)])
+    cv2.drawContours(blank_image,[corners],0,(0,255,0),-1)
     return blank_image
