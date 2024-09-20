@@ -73,6 +73,7 @@ def make_frame(frame_size, border_size, bevel_size, image_size):
     bevel_bottom = image_bottom + bevel_size[1]
     bevel_right = image_right + bevel_size[0]
     bevel_left = image_left - bevel_size[0]
+    
 
     image_centre = ( frame_size[0]//2, frame_size[1]//2)
     top_bevel = np.array([(bevel_top, bevel_left), image_centre, (bevel_top, bevel_right)])
@@ -82,27 +83,31 @@ def make_frame(frame_size, border_size, bevel_size, image_size):
     print(f"Top bevel = {top_bevel}")
     print(f"centre = {image_centre}")
 
-
+    base_colour = (220, 220, 220)
     # these bevels aren't quite right. We need to draw trapeziums to get 45 degree corners, not triangles.
-    top_bev_corners = np.array([image_centre,
-        (bevel_left, bevel_top),
-        (bevel_right, bevel_top)])
-    cv2.drawContours(blank_image,[top_bev_corners],0,(0,255,0),-1)
+    top_bev_corners = np.array([
+        (bevel_left, bevel_top),(bevel_right, bevel_top),
+        (image_right, image_top),(image_left, image_top)
+        ])
+    cv2.drawContours(blank_image,[top_bev_corners],0,(170, 170, 170),-1)
    
-    bot_bev_corners = np.array([image_centre,
-        (bevel_left, bevel_bottom),
-        (bevel_right, bevel_bottom)])
-    cv2.drawContours(blank_image,[bot_bev_corners],0,(255,255,0),-1)
+    bot_bev_corners = np.array([
+        (bevel_left, bevel_bottom), (bevel_right, bevel_bottom),
+        (image_right, image_bottom),(image_left, image_bottom)
+        ])
+    cv2.drawContours(blank_image,[bot_bev_corners],0, (240,240,240),-1)
 
-    left_bev_corners = np.array([image_centre,
-        (bevel_left, bevel_top),
-        (bevel_left, bevel_bottom)])
-    cv2.drawContours(blank_image,[left_bev_corners],0,(255,0,0),-1)
+    left_bev_corners = np.array([
+        (bevel_left, bevel_top), (bevel_left, bevel_bottom),
+        (image_left, image_bottom), (image_left, image_top)
+        ])
+    cv2.drawContours(blank_image,[left_bev_corners],0,(200, 200, 200),-1)
     
-    right_bev_corners = np.array([image_centre,
-        (bevel_right, bevel_top),
-        (bevel_right, bevel_bottom)])
-    cv2.drawContours(blank_image,[right_bev_corners],0,(0,0,255),-1)
+    right_bev_corners = np.array([
+        (bevel_right, bevel_top), (bevel_right, bevel_bottom),
+        (image_right, image_bottom), (image_right, image_top)
+        ])
+    cv2.drawContours(blank_image,[right_bev_corners],0,(200,200,200),-1)
 
     blank_image[0:bevel_top,:] = (244, 244, 244)
     blank_image[bevel_bottom:frame_size[1],:] = (244, 244, 244)
