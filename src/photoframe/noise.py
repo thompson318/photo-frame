@@ -3,30 +3,21 @@
 import cv2
 import numpy as np
 
-BG_COLOR = 209
-BG_SIGMA = 2
 MONOCHROME = 3
 
 
-def blank_image(width=1024, height=1024, background=BG_COLOR):
-    """
-    It creates a blank image of the given background color
-    """
-    img = np.full((height, width, MONOCHROME), background, np.uint8)
-    return img
-
-
-def add_noise(img, sigma=BG_SIGMA):
+def add_noise(img, sigma=2):
     """
     Adds noise to the existing image
     """
     width, height, ch = img.shape
-    n = noise(width, height, sigma=sigma)
+    n = noise(width, height, ratio = 4, sigma=sigma)
     img = img + n
+    #img = texture(img)
     return img.clip(0, 255)
 
 
-def noise(width, height, ratio=1, sigma=BG_SIGMA):
+def noise(width, height, ratio=1, sigma=100):
     """
     The function generates an image, filled with gaussian nose. If ratio parameter is specified,
     noise will be generated for a lesser image and then it will be upscaled to the original size.
@@ -46,10 +37,10 @@ def noise(width, height, ratio=1, sigma=BG_SIGMA):
     result = np.random.normal(mean, sigma, (w, h, MONOCHROME))
     if ratio > 1:
         result = cv2.resize(result, dsize=(width, height), interpolation=cv2.INTER_LINEAR)
-    return result.reshape((width, height, MONOCHROME))
+    return result.reshape((width, height, MONOCHROME)).astype(np.uint8)
 
 
-def texture(image, sigma=BG_SIGMA, turbulence=2):
+def texture(image, sigma=2, turbulence=2):
     """
     Consequently applies noise patterns to the original image from big to small.
 
