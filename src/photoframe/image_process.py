@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+from src.photoframe.noise import add_noise
+
 def to_display(filename, frame_size, border_size):
     """ 
     Loads an image from disc, resizes it, adds a frame
@@ -16,6 +18,7 @@ def to_display(filename, frame_size, border_size):
 
     bevel_size = [10, 10]
     frame = make_frame(frame_size, border_size,bevel_size, [image.shape[1], image.shape[0]])
+    frame = add_noise(frame)
     frame[border_size[1]:frame_size[1]-border_size[1], border_size[0]:frame_size[0]-border_size[0]] = image
     return frame
 
