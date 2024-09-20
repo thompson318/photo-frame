@@ -62,23 +62,42 @@ def make_frame(frame_size, border_size, bevel_size, image_size):
     # fill outside with rectangals. 
     # optional: blurred lines through corners?
     
-    blank_image = np.zeros((frame_size[0],frame_size[1],3), np.uint8)
-    image_top = (frame_size[0] - image_size[0]) // 2
-    image_bottom = frame_size[0] - (frame_size[0] - image_size[0]) // 2
-    image_right = (frame_size[1] - image_size[1]) // 2
-    image_left = frame_size[1] - (frame_size[1] - image_size[1]) // 2
+    blank_image = np.zeros((frame_size[1],frame_size[0],3), np.uint8)
+    image_top = (frame_size[1] - image_size[1]) // 2
+    image_bottom = frame_size[1] - (frame_size[1] - image_size[1]) // 2
+    image_right = (frame_size[0] - image_size[0]) // 2
+    image_left = frame_size[0] - (frame_size[0] - image_size[0]) // 2
     
-    bevel_top = image_top - bevel_size[0]
-    bevel_bottom = image_bottom + bevel_size[0]
-    bevel_right = image_right + bevel_size[1]
-    bevel_left = image_left - bevel_size[1]
+    bevel_top = image_top - bevel_size[1]
+    bevel_bottom = image_bottom + bevel_size[1]
+    bevel_right = image_right + bevel_size[0]
+    bevel_left = image_left - bevel_size[0]
 
     image_centre = ( frame_size[0]//2, frame_size[1]//2)
     top_bevel = np.array([(bevel_top, bevel_left), image_centre, (bevel_top, bevel_right)])
+    cv2.putText(blank_image,'ct', org = image_centre, fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 5, color=(0,0,255), thickness = 5)
+    cv2.putText(blank_image,'bl', org = (bevel_left, bevel_top), fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 5, color=(0,0,255), thickness = 5)
+    cv2.putText(blank_image,'br', org = (bevel_right, bevel_top), fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 5, color=(0,0,255), thickness = 5)
     print(f"Top bevel = {top_bevel}")
+    print(f"centre = {image_centre}")
 
-    corners = np.array([image_centre,
-        (bevel_top, bevel_left),
-        (bevel_top,bevel_left)])
-    cv2.drawContours(blank_image,[corners],0,(0,255,0),-1)
+    top_bev_corners = np.array([image_centre,
+        (bevel_left, bevel_top),
+        (bevel_right, bevel_top)])
+    cv2.drawContours(blank_image,[top_bev_corners],0,(0,255,0),-1)
+   
+    bot_bev_corners = np.array([image_centre,
+        (bevel_left, bevel_bottom),
+        (bevel_right, bevel_bottom)])
+    cv2.drawContours(blank_image,[bot_bev_corners],0,(255,255,0),-1)
+
+    left_bev_corners = np.array([image_centre,
+        (bevel_left, bevel_top),
+        (bevel_left, bevel_bottom)])
+    cv2.drawContours(blank_image,[left_bev_corners],0,(255,0,0),-1)
+    
+    right_bev_corners = np.array([image_centre,
+        (bevel_right, bevel_top),
+        (bevel_right, bevel_bottom)])
+    cv2.drawContours(blank_image,[right_bev_corners],0,(0,0,255),-1)
     return blank_image

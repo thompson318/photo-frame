@@ -44,7 +44,7 @@ def record_loop(photolist, display):
 
 if __name__ == "__main__":
    photos = photolist()
-   display = display()
+   display = display(0.8)
    p = Process(target=record_loop, args=(photos,display))
    p.start()  
    app.run(debug=True, use_reloader=False)
