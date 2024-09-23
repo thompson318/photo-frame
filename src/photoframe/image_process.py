@@ -13,15 +13,16 @@ def to_display(filename, frame_size, border_size):
     
     image = _resize_and_crop(image, frame_size, border_size)
 
-    cv2.imwrite(f"{filename}.cropped.jpg", image)
+    height, width, channels = image.shape
+    full_border = [ ( frame_size[0] - width ) // 2, ( frame_size[1] - height ) // 2 ]
+    print(f"We need a border this big {full_border}")
 
-
-    bevel_size = [10, 10]
-    frame = make_frame(frame_size, border_size,bevel_size, [image.shape[1], image.shape[0]])
+    bevel_size = [4, 4]
+    frame = make_frame(frame_size, bevel_size, [image.shape[1], image.shape[0]])
     print(f"Image size = {frame.shape} type {frame.dtype}")
     frame = add_noise(frame)
     print(f"Image size = {frame.shape} type {frame.dtype}")
-    frame[border_size[1]:frame_size[1]-border_size[1], border_size[0]:frame_size[0]-border_size[0]] = image
+    frame[full_border[1]:frame_size[1]-full_border[1], full_border[0]:frame_size[0]-full_border[0]] = image
     return frame
 
 def _resize_and_crop(image, frame_size, 
@@ -63,7 +64,7 @@ def _resize_and_crop(image, frame_size,
     assert width <= target_size[0]
     return cropped_image
 
-def make_frame(frame_size, border_size, bevel_size, image_size):
+def make_frame(frame_size, bevel_size, image_size):
     # plan. Make a blank image x by y. Draw four triangles from just beyond the image corners to the middle. Top triangle is slightly darker than the others.
     # fill outside with rectangals. 
     # optional: blurred lines through corners?
