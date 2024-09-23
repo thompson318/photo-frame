@@ -47,5 +47,5 @@ if __name__ == "__main__":
    display = display(1.0)
    p = Process(target=record_loop, args=(photos,display))
    p.start()  
-   app.run(debug=True, use_reloader=False)
+   app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5001)
    p.join()
