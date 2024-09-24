@@ -20,7 +20,7 @@ def to_display(filename, frame_size, border_size):
     bevel_size = [4, 4]
     frame = make_frame(frame_size, bevel_size, [image.shape[1], image.shape[0]])
     print(f"Image size = {frame.shape} type {frame.dtype}")
-    frame = add_noise(frame)
+    frame = add_noise(frame, sigma = 20)
     print(f"Image size = {frame.shape} type {frame.dtype}")
     frame[full_border[1]:frame_size[1]-full_border[1], full_border[0]:frame_size[0]-full_border[0]] = image
     return frame
@@ -89,7 +89,7 @@ def make_frame(frame_size, bevel_size, image_size):
     print(f"Top bevel = {top_bevel}")
     print(f"centre = {image_centre}")
 
-    base_colour = (220, 220, 220)
+    base_colour = (160, 120, 120)
     # these bevels aren't quite right. We need to draw trapeziums to get 45 degree corners, not triangles.
     top_bev_corners = np.array([
         (bevel_left, bevel_top),(bevel_right, bevel_top),
@@ -115,8 +115,8 @@ def make_frame(frame_size, bevel_size, image_size):
         ])
     cv2.drawContours(blank_image,[right_bev_corners],0,(200,200,200),-1)
 
-    blank_image[0:bevel_top,:] = (244, 244, 244)
-    blank_image[bevel_bottom:frame_size[1],:] = (244, 244, 244)
-    blank_image[:,0:bevel_left] = (244, 244, 244)
-    blank_image[:,bevel_right: frame_size[0]] = (244, 244, 244)
+    blank_image[0:bevel_top,:] = base_colour 
+    blank_image[bevel_bottom:frame_size[1],:] = base_colour 
+    blank_image[:,0:bevel_left] = base_colour 
+    blank_image[:,bevel_right: frame_size[0]] = base_colour 
     return blank_image
