@@ -54,7 +54,7 @@ def texture(image, sigma=2, turbulence=2):
     """
     result = image.astype(float)
     cols, rows, ch = image.shape
-    ratio = cols
+    ratio = 10
     while not ratio == 1:
         result += noise(cols, rows, ratio, sigma=sigma)
         ratio = (ratio // turbulence) or 1

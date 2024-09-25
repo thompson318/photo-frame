@@ -20,7 +20,7 @@ def to_display(filename, frame_size, border_size):
     bevel_size = [4, 4]
     frame = make_frame(frame_size, bevel_size, [image.shape[1], image.shape[0]])
     print(f"Image size = {frame.shape} type {frame.dtype}")
-    frame = add_noise(frame, sigma = 20)
+    frame = add_noise(frame, sigma = 5)
     print(f"Image size = {frame.shape} type {frame.dtype}")
     frame[full_border[1]:frame_size[1]-full_border[1], full_border[0]:frame_size[0]-full_border[0]] = image
     return frame
