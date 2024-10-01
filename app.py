@@ -35,7 +35,7 @@ def record_loop(photolist, display):
    frame_size = [1920, 1080]
    border_size = [60, 60]
    while True:
-      photo = photolist.random_photo()
+      photo = photolist.random_photo()[0]
       print(f"got {photo}")
       image_to_display = to_display(photo, frame_size, border_size)
       display.show(image_to_display)
