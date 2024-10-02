@@ -12,7 +12,6 @@ def _crop(image, roi):
     :returns: a cropped image
     """
     new_image = image[roi[1]:roi[3],roi[0]:roi[2],:]
-    print (f"new image size {new_image.shape}")
     return new_image
 
 def to_display(photo, frame_size, border_size):
@@ -32,8 +31,9 @@ def to_display(photo, frame_size, border_size):
     region_of_interest = options.get("roi", None)
     if region_of_interest is not None:
         image = _crop(image, region_of_interest)
-
-    image = _resize_and_crop(image, frame_size, border_size)
+    
+    crop_to_frame = options.get("crop", False)
+    image = _resize_and_crop(image, frame_size, border_size, crop_to_frame)
 
     height, width, channels = image.shape
     full_border = [ ( frame_size[0] - width ) // 2, ( frame_size[1] - height ) // 2 ]
@@ -48,8 +48,32 @@ def to_display(photo, frame_size, border_size):
     return frame
 
 def _resize_and_crop(image, frame_size, 
-        border_size):
+        border_size, crop_to_frame):
+    """
+    We're aimin to create an image that fit's nicely within the frame
+    Maybe don't think landscape or portrait but rather aspect ratio
+    If it's landscape AND crop_to_frame -> we scale to the frame width, then 
+        if required crop to height
+    If it's lansscape AND NOT crop_to_frame -> we do the smallest scale -> height or width
+    etc.
+    Possibilities:
+    """
+    target_width = frame_size[0] - 2 * border_size[0]
+    target_height = frame_size[1] - 2 * border_size[1] 
+    target_aspect_ratio = target_width / target_height
+    print (f"target width = {target_width}, target_height = {target_height} , target_aspect_ratio = {target_aspect_ratio}")
+    target_aspect_ratio = (frame_size[0] - 2 * border_size[0]) 
     height, width, channels = image.shape
+    image_aspect_ratio = width/height
+    print(f"image aspect ratio = {image_aspect_ratio}")
+    if image_aspect_ratio > target_aspect_ratio:
+        print("We need to make it taller")
+    elif image_aspect_ratio < target_aspect_ratio:
+        print("We need to make it wider")
+    else:
+        print("Aspect ratio good")
+
+
 
     print (f"{height} {width} {channels}")
 
