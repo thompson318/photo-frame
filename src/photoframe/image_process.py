@@ -11,7 +11,9 @@ def _crop(image, roi):
     :param region_of_interest: a list containing [x0, y0, x1, y2]
     :returns: a cropped image
     """
-    return image[roi[0]:roi[2],roi[1]:roi[3],:]
+    new_image = image[roi[1]:roi[3],roi[0]:roi[2],:]
+    print (f"new image size {new_image.shape}")
+    return new_image
 
 def to_display(photo, frame_size, border_size):
     """ 
