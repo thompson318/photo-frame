@@ -3,19 +3,34 @@ import numpy as np
 
 from src.photoframe.noise import add_noise
 
+def _crop(image, roi):
+    """
+    Internal function to crop an image and return a cropped
+    copy of the image. 
+    :param image: the image to crop
+    :param region_of_interest: a list containing [x0, y0, x1, y2]
+    :returns: a cropped image
+    """
+    return image[roi[0]:roi[2],roi[1]:roi[3],:]
+
 def to_display(photo, frame_size, border_size):
     """ 
     Loads an image from disc, resizes it, adds a frame
     photo is a tuple photo[0] is a filename photo [1] is a dictionary of 
     options
     """
-    if not photo[1].get("show", True):
+    options = photo[1]
+    if not options.get("show", True):
         return None
 
     filename = photo[0]
     image = cv2.imread(filename)
     print (f"Read {filename}", end = " ")
     
+    region_of_interest = options.get("roi", None)
+    if region_of_interest is not None:
+        image = _crop(image, region_of_interest)
+
     image = _resize_and_crop(image, frame_size, border_size)
 
     height, width, channels = image.shape

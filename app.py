@@ -36,6 +36,7 @@ def record_loop(photolist, display):
    border_size = [60, 60]
    while True:
       photo = photolist.random_photo()
+      photo = ('./photos/DSC_0359.JPG', {"show":True, "roi":[2100,1600,3960,1560]})
       print(f"got {photo[0]}")
       image_to_display = to_display(photo, frame_size, border_size)
       if image_to_display is not None:
