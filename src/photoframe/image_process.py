@@ -3,11 +3,16 @@ import numpy as np
 
 from src.photoframe.noise import add_noise
 
-def to_display(filename, frame_size, border_size):
+def to_display(photo, frame_size, border_size):
     """ 
     Loads an image from disc, resizes it, adds a frame
+    photo is a tuple photo[0] is a filename photo [1] is a dictionary of 
+    options
     """
+    if not photo[1].get("show", True):
+        return None
 
+    filename = photo[0]
     image = cv2.imread(filename)
     print (f"Read {filename}", end = " ")
     

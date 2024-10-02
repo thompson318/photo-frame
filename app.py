@@ -35,11 +35,12 @@ def record_loop(photolist, display):
    frame_size = [1920, 1080]
    border_size = [60, 60]
    while True:
-      photo = photolist.random_photo()[0]
-      print(f"got {photo}")
+      photo = photolist.random_photo()
+      print(f"got {photo[0]}")
       image_to_display = to_display(photo, frame_size, border_size)
-      display.show(image_to_display)
-      time.sleep(1)
+      if image_to_display is not None:
+        display.show(image_to_display)
+        time.sleep(1)
 
 
 if __name__ == "__main__":
