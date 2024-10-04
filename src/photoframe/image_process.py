@@ -83,7 +83,18 @@ def _resize_and_crop(image, frame_size,
         print("Aspect ratio good")
 
     # here we do some maths to work out how to crop it
+    if crop_aspect_ratio:
+        if scale_to_width:
+            # we're going to crop the sides of the photo to acheive the right aspect ratio
+            finished_image_width = target_aspect_ration * height
+            print(f"finished width = {finished_image_width}")
 
+        else:
+            # we're going to crop the top and bottom of the photo to achieve the right aspect ratio
+            finished_image_height = width / target_aspect_ratio
+            print(f"finished height = {finished_image_height}")
+    else:
+        print("Lets not crop")
 
     print (f"{height} {width} {channels}")
 
