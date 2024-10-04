@@ -66,13 +66,23 @@ def _resize_and_crop(image, frame_size,
     height, width, channels = image.shape
     image_aspect_ratio = width/height
     print(f"image aspect ratio = {image_aspect_ratio}")
+    crop_to_aspect_ratio = True # by default we crop to get the right aspect ration
+    scale_to_width = False      # by default we scale to fit the screen height
+    if abs(image_aspect_ratio - target_aspect_ratio) > 0.5: # if the aspect ratio difference is really big don't crop
+        crop_aspect_ratio = False
+    if crop_to_frame == False:
+        crop_aspect_ratio = False
+
     if image_aspect_ratio > target_aspect_ratio:
         print("We need to make it taller")
+        scale_to_width = True      # by default we scale to fit the screen height
     elif image_aspect_ratio < target_aspect_ratio:
         print("We need to make it wider")
+        scale_to_width = False      # by default we scale to fit the screen height
     else:
         print("Aspect ratio good")
 
+    # here we do some maths to work out how to crop it
 
 
     print (f"{height} {width} {channels}")
