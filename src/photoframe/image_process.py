@@ -47,6 +47,31 @@ def to_display(photo, frame_size, border_size):
     frame[full_border[1]:frame_size[1]-full_border[1], full_border[0]:frame_size[0]-full_border[0]] = image
     return frame
 
+def _crop_to_aspect_ratio(image, target_aspect_ratio):
+    """
+    uses image crop to get the right aspect ratio
+    """
+    height, width, channels = image.shape
+    image_aspect_ratio = width/height
+
+    if abs(image_aspect_ratio - target_aspect_ratio) > 0.5: # if the aspect ratio difference is really big don't crop
+        return image
+
+    if image_aspect_ratio > target_aspect_ratio:
+        finished_image_width = target_aspect_ratio * height
+        amount_to_crop = (width - finished_image_width) // 2 
+        print(f"We need to make it taller.  cropping {amount_to_crop} from {width}")
+        image = image[:,amount_to_crop:width-amount_to_crop//2,:]
+    elif image_aspect_ratio < target_aspect_ratio:
+        finished_image_height = width / target_aspect_ratio
+        amount_to_crop = (height - finished_image_height) // 2 
+        print(f"We need to make it wider.  cropping {amount_to_crop} from {height}")
+        image = image[amount_to_crop:height-amount_to_crop//2,:,:]
+    else:
+        print("Aspect ratio good")
+    return image
+
+
 def _resize_and_crop(image, frame_size, 
         border_size, crop_to_frame):
     """
@@ -62,40 +87,13 @@ def _resize_and_crop(image, frame_size,
     target_height = frame_size[1] - 2 * border_size[1] 
     target_aspect_ratio = target_width / target_height
     print (f"target width = {target_width}, target_height = {target_height} , target_aspect_ratio = {target_aspect_ratio}")
-    target_aspect_ratio = (frame_size[0] - 2 * border_size[0]) 
-    height, width, channels = image.shape
-    image_aspect_ratio = width/height
-    print(f"image aspect ratio = {image_aspect_ratio}")
     crop_to_aspect_ratio = True # by default we crop to get the right aspect ration
     scale_to_width = False      # by default we scale to fit the screen height
-    if abs(image_aspect_ratio - target_aspect_ratio) > 0.5: # if the aspect ratio difference is really big don't crop
-        crop_aspect_ratio = False
-    if crop_to_frame == False:
-        crop_aspect_ratio = False
+    if crop_to_frame == True:
+        image = _crop_to_aspect_ratio(image, target_aspect_ratio)
 
-    if image_aspect_ratio > target_aspect_ratio:
-        print("We need to make it taller")
-        scale_to_width = True      # by default we scale to fit the screen height
-    elif image_aspect_ratio < target_aspect_ratio:
-        print("We need to make it wider")
-        scale_to_width = False      # by default we scale to fit the screen height
-    else:
-        print("Aspect ratio good")
 
-    # here we do some maths to work out how to crop it
-    if crop_aspect_ratio:
-        if scale_to_width:
-            # we're going to crop the sides of the photo to acheive the right aspect ratio
-            finished_image_width = target_aspect_ration * height
-            print(f"finished width = {finished_image_width}")
-
-        else:
-            # we're going to crop the top and bottom of the photo to achieve the right aspect ratio
-            finished_image_height = width / target_aspect_ratio
-            print(f"finished height = {finished_image_height}")
-    else:
-        print("Lets not crop")
-
+    height, width, channels = image.shape
     print (f"{height} {width} {channels}")
 
     target_size = [frame_size[0] - 2 * border_size[0], 
@@ -119,17 +117,9 @@ def _resize_and_crop(image, frame_size,
     print(f"Scaled to {scaled_image.shape}")
 
     height, width, channels = scaled_image.shape
-    #if it's landscape scale to fit width then crop top and bottom if required
-    #if it's portrait scale to fit height, no need to crop.
-    oversize = height - target_size[1] 
-    if oversize%2 != 0:
-        oversize = oversize+1
-    cropped_image = scaled_image[oversize//2:height-oversize//2,:,:]
-
-    height, width, channels = cropped_image.shape
     assert height == target_size[1]
     assert width <= target_size[0]
-    return cropped_image
+    return scaled_image
 
 def make_frame(frame_size, bevel_size, image_size):
     # plan. Make a blank image x by y. Draw four triangles from just beyond the image corners to the middle. Top triangle is slightly darker than the others.
