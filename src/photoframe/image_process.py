@@ -41,11 +41,21 @@ def to_display(photo, frame_size, border_size):
     print(f"We need a border this big {full_border}")
 
     bevel_size = [4, 4]
-    frame = make_frame(frame_size, bevel_size, [image.shape[1], image.shape[0]])
+    image_size = [image.shape[1], image.shape[0]]
+    image_top = frame_size[1] // 2 - image_size[1] // 2
+    image_bottom = image_top + image_size[1]
+    #image_bottom = frame_size[1] // 2 + image_size[1] // 2
+    image_left = frame_size[0] //2 - image_size[0] // 2
+    #image_right = frame_size[0] // 2 + image_size[0] // 2
+    image_right = image_left + image_size[0]
+    print (f"{image_top}, {image_bottom}, {image_left}, {image_right}")
+    frame = make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, image_right)
     print(f"Image size = {frame.shape} type {frame.dtype}")
     frame = add_noise(frame, sigma = 5)
-    print(f"Image size = {frame.shape} type {frame.dtype}")
-    frame[full_border[1]:frame_size[1]-full_border[1], full_border[0]:frame_size[0]-full_border[0]] = image
+    print(f"Image size = {image.shape} type {frame.dtype}")
+    full_border = [ image_left, image_top ]
+    #frame[full_border[1]:frame_size[1]-full_border[1], full_border[0]:frame_size[0]-full_border[0]] = image
+    frame[image_top:image_bottom, image_left:image_right] = image
     return frame
 
 def _crop_to_aspect_ratio(image, target_aspect_ratio):
@@ -116,20 +126,16 @@ def _resize_and_crop(image, frame_size,
     print(f"Scaled to {scaled_image.shape}")
 
     height, width, channels = scaled_image.shape
-    assert height == target_height
-    assert width == target_width
+    assert height <= target_height
+    assert width <= target_width
     return scaled_image
 
-def make_frame(frame_size, bevel_size, image_size):
+def make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, image_right):
     # plan. Make a blank image x by y. Draw four triangles from just beyond the image corners to the middle. Top triangle is slightly darker than the others.
     # fill outside with rectangals. 
     # optional: blurred lines through corners?
     
     blank_image = np.zeros((frame_size[1],frame_size[0],3), np.uint8)
-    image_top = (frame_size[1] - image_size[1]) // 2
-    image_bottom = frame_size[1] - (frame_size[1] - image_size[1]) // 2
-    image_left = (frame_size[0] - image_size[0]) // 2
-    image_right = frame_size[0] - (frame_size[0] - image_size[0]) // 2
     
     bevel_top = image_top - bevel_size[1]
     bevel_bottom = image_bottom + bevel_size[1]
