@@ -26,13 +26,14 @@ def to_display(photo, frame_size, border_size):
 
     filename = photo[0]
     image = cv2.imread(filename)
-    print (f"Read {filename}", end = " ")
+    print (f"Read {filename}", end = "\n")
     
     region_of_interest = options.get("roi", None)
     if region_of_interest is not None:
         image = _crop(image, region_of_interest)
     
     crop_to_frame = options.get("crop", False)
+    print (f"Cropping to frame = {crop_to_frame}")
     image = _resize_and_crop(image, frame_size, border_size, crop_to_frame)
 
     height, width, channels = image.shape
@@ -53,24 +54,43 @@ def _crop_to_aspect_ratio(image, target_aspect_ratio):
     """
     height, width, channels = image.shape
     image_aspect_ratio = width/height
-
-    if abs(image_aspect_ratio - target_aspect_ratio) > 0.5: # if the aspect ratio difference is really big don't crop
+    
+    aspect_ration_delta = abs(image_aspect_ratio - target_aspect_ratio)
+    if aspect_ration_delta > 0.6: # if the aspect ratio difference is really big don't crop
+        print(f"Difference in aspect ratio {aspect_ration_delta} too big, not cropping")
         return image
 
     if image_aspect_ratio > target_aspect_ratio:
         finished_image_width = target_aspect_ratio * height
-        amount_to_crop = (width - finished_image_width) // 2 
+        amount_to_crop = int((width - finished_image_width) // 2)
         print(f"We need to make it taller.  cropping {amount_to_crop} from {width}")
         image = image[:,amount_to_crop:width-amount_to_crop//2,:]
     elif image_aspect_ratio < target_aspect_ratio:
         finished_image_height = width / target_aspect_ratio
-        amount_to_crop = (height - finished_image_height) // 2 
+        amount_to_crop = int((height - finished_image_height) // 2) 
         print(f"We need to make it wider.  cropping {amount_to_crop} from {height}")
         image = image[amount_to_crop:height-amount_to_crop//2,:,:]
     else:
         print("Aspect ratio good")
     return image
 
+
+def _resize(image, target_width, target_height):
+    """ 
+    resizes to fit the frame. If the image aspect ratio (width/height) is 
+    greater than the target, we resize to width. Else to height
+    """
+    height, width, channels = image.shape
+    scale_factor = 1.0
+    if width / height > target_width / target_height:
+        scale_factor = target_width / width
+    else: 
+        scale_factor = target_height / height
+        
+    scaled_image = cv2.resize(image, dsize=(0,0), fx = scale_factor, fy = scale_factor, 
+        interpolation = cv2.INTER_AREA)
+    return scaled_image
+    
 
 def _resize_and_crop(image, frame_size, 
         border_size, crop_to_frame):
@@ -87,38 +107,17 @@ def _resize_and_crop(image, frame_size,
     target_height = frame_size[1] - 2 * border_size[1] 
     target_aspect_ratio = target_width / target_height
     print (f"target width = {target_width}, target_height = {target_height} , target_aspect_ratio = {target_aspect_ratio}")
-    crop_to_aspect_ratio = True # by default we crop to get the right aspect ration
-    scale_to_width = False      # by default we scale to fit the screen height
-    if crop_to_frame == True:
+    
+    if crop_to_frame:
         image = _crop_to_aspect_ratio(image, target_aspect_ratio)
-
-
-    height, width, channels = image.shape
-    print (f"{height} {width} {channels}")
-
-    target_size = [frame_size[0] - 2 * border_size[0], 
-            frame_size[1] - 2 * border_size[1]]
-
-    print (f"Scale and crop to {target_size}")
-
-    portrait = False
-    if height > width:
-        portrait = True
-
-    if portrait:
-        scale_factor = target_size[1]/height
-        scaled_image = cv2.resize(image, dsize=(0,0), fx = scale_factor, fy = scale_factor, 
-                interpolation = cv2.INTER_LANCZOS4)
-    else:
-        scale_factor = target_size[0]/width
-        scaled_image = cv2.resize(image, dsize=(0,0), fx = scale_factor, fy = scale_factor, 
-                interpolation = cv2.INTER_LANCZOS4)
+    
+    scaled_image = _resize(image, target_width, target_height)
 
     print(f"Scaled to {scaled_image.shape}")
 
     height, width, channels = scaled_image.shape
-    assert height == target_size[1]
-    assert width <= target_size[0]
+    assert height == target_height
+    assert width == target_width
     return scaled_image
 
 def make_frame(frame_size, bevel_size, image_size):
