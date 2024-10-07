@@ -74,12 +74,12 @@ def _crop_to_aspect_ratio(image, target_aspect_ratio):
         finished_image_width = target_aspect_ratio * height
         amount_to_crop = int((width - finished_image_width) // 2)
         print(f"We need to make it taller.  cropping {amount_to_crop} from {width}")
-        image = image[:,amount_to_crop:width-amount_to_crop//2,:]
+        image = image[:,amount_to_crop:width-amount_to_crop,:]
     elif image_aspect_ratio < target_aspect_ratio:
         finished_image_height = width / target_aspect_ratio
         amount_to_crop = int((height - finished_image_height) // 2) 
         print(f"We need to make it wider.  cropping {amount_to_crop} from {height}")
-        image = image[amount_to_crop:height-amount_to_crop//2,:,:]
+        image = image[amount_to_crop:height-amount_to_crop,:,:]
     else:
         print("Aspect ratio good")
     return image
