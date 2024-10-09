@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import random
 
 from src.photoframe.noise import add_noise
 
@@ -49,7 +50,9 @@ def to_display(photo, frame_size, border_size):
     #image_right = frame_size[0] // 2 + image_size[0] // 2
     image_right = image_left + image_size[0]
     print (f"{image_top}, {image_bottom}, {image_left}, {image_right}")
-    frame = make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, image_right)
+
+    frame_colour = _make_frame_colour(image)
+    frame = make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, image_right, frame_colour)
     print(f"Image size = {frame.shape} type {frame.dtype}")
     frame = add_noise(frame, sigma = 5)
     print(f"Image size = {image.shape} type {frame.dtype}")
@@ -130,7 +133,7 @@ def _resize_and_crop(image, frame_size,
     assert width <= target_width
     return scaled_image
 
-def make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, image_right):
+def make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, image_right, base_colour):
     # plan. Make a blank image x by y. Draw four triangles from just beyond the image corners to the middle. Top triangle is slightly darker than the others.
     # fill outside with rectangals. 
     # optional: blurred lines through corners?
@@ -151,7 +154,6 @@ def make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, imag
     print(f"Top bevel = {top_bevel}")
     print(f"centre = {image_centre}")
 
-    base_colour = (160, 120, 120)
     # these bevels aren't quite right. We need to draw trapeziums to get 45 degree corners, not triangles.
     top_bev_corners = np.array([
         (bevel_left, bevel_top),(bevel_right, bevel_top),
@@ -182,3 +184,18 @@ def make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, imag
     blank_image[:,0:bevel_left] = base_colour 
     blank_image[:,bevel_right: frame_size[0]] = base_colour 
     return blank_image
+
+
+def _make_frame_colour(image):
+    """Reads an image and uses the colours in the image to generate frame colour
+    suggestions:
+    Possible ways to do this.
+    1. Resample it with cubic interpolation to something small,
+    like 20 x 30. Randomly sample a pixel colour from the result.
+    2. Convert rbg values to hue values. Histogram it, then return a value with
+    the right hue but low saturation and brightness
+    """
+    random_colour = random.choice(image.reshape(-1, 3))
+    print (f"Random colour{random_colour}")
+    return random_colour
+
