@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import random
+import colorsys
 
 from src.photoframe.noise import add_noise
 
@@ -197,5 +198,9 @@ def _make_frame_colour(image):
     """
     random_colour = random.choice(image.reshape(-1, 3))
     print (f"Random colour{random_colour}")
+    red = random_colour[0]/255
+    green = random_colour[1]/255
+    blue = random_colour[2]/255 # or is that bgr?
+    print (f"Random colour{colorsys.rgb_to_hsv(red, green, blue)}")
     return random_colour
 
