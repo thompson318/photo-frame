@@ -33,7 +33,7 @@ def get_tasks():
 def record_loop(photolist, display):
    
    frame_size = [1920, 1080]
-   border_size = [46, 34]
+   border_size = [48, 40]
    while True:
       photo = photolist.random_photo()
 #      photo = ('./photos/DSC_0359.JPG', {"show":True, "roi":[2100,1600,3900,2560]})
