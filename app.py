@@ -24,18 +24,25 @@ tasks = [
    }
 ]
 
+def create_app(photo_instance, display_instance):
+    app = Flask(__name__)
+    app.config['PHOTOS'] = photo_instance
+    app.config['DISPLAY'] = display_instance
+    @app.route('/todo/api/v1.0/tasks', methods=['GET'])
+    def get_tasks():
+        return jsonify({'tasks': tasks})
+ 
+    @app.route('/photos', methods=['GET'])
+    def list_photos():
+        return app.config['PHOTOS'].photos
 
-@app.route('/todo/api/v1.0/tasks', methods=['GET'])
-def get_tasks():
-   return jsonify({'tasks': tasks})
+    @app.route('/', methods=['GET'])
+    def index():
+        return "photo-server"
 
-@app.route('/photos', methods=['GET'])
-def list_photos():
-   return app.config['PHOTOS'].photos
+   
+    return app
 
-@app.route('/', methods=['GET'])
-def index():
-   return "photo-server"
 
 def record_loop(photolist, display):
    
@@ -50,11 +57,6 @@ def record_loop(photolist, display):
         display.show(image_to_display)
         time.sleep(1)
 
-def create_app(photo_instance, display_instance):
-    app = Flask(__name__)
-    app.config['PHOTOS'] = photo_instance
-    app.config['DISPLAY'] = display_instance
-    return app
 
 if __name__ == "__main__":
    photos = photolist()
