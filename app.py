@@ -6,31 +6,11 @@ from src.photoframe.fileio import photolist
 from src.photoframe.image_process import to_display 
 from src.photoframe.display import display 
 
-app = Flask(__name__)
-
-
-tasks = [
-   {
-      'id': 1,
-      'title': u'Buy groceries',
-      'description': u'Milk, Cheese, Pizza, Fruit, Tylenol', 
-      'done': False
-   },
-   {
-      'id': 2,
-      'title': u'Learn Python',
-      'description': u'Need to find a good Python tutorial on the web', 
-      'done': False
-   }
-]
 
 def create_app(photo_instance, display_instance):
     app = Flask(__name__)
     app.config['PHOTOS'] = photo_instance
     app.config['DISPLAY'] = display_instance
-    @app.route('/todo/api/v1.0/tasks', methods=['GET'])
-    def get_tasks():
-        return jsonify({'tasks': tasks})
  
     @app.route('/photos', methods=['GET'])
     def list_photos():
@@ -39,7 +19,11 @@ def create_app(photo_instance, display_instance):
     @app.route('/', methods=['GET'])
     def index():
         return "photo-server"
+    
+    @app.route('/scan', methods=['GET'])
+    def scan():
 
+        return app.config['PHOTOS'].scan_for_photos()
    
     return app
 

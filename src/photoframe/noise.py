@@ -15,7 +15,6 @@ def add_noise(img, sigma=2):
     img = img - n
     #img = texture(img)
     img = img.clip(0,255)
-    cv2.imwrite("noisandmask.png", img)
     return img
 
 
@@ -40,7 +39,6 @@ def noise(width, height, ratio=1, sigma=100):
     if ratio > 1:
         result = cv2.resize(result, dsize=(width, height), interpolation=cv2.INTER_LINEAR)
     result = result.reshape((width, height, MONOCHROME)).astype(np.uint8)
-    cv2.imwrite("noisymask.png", result)
     return result
 
 
