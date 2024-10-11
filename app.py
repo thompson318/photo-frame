@@ -1,6 +1,7 @@
 import time
 from flask import Flask, jsonify
 from multiprocessing import Process, Value
+from pyautogui import press
 
 from src.photoframe.fileio import photolist 
 from src.photoframe.image_process import to_display 
@@ -24,6 +25,11 @@ def create_app(photo_instance, display_instance):
     def scan():
 
         return app.config['PHOTOS'].scan_for_photos()
+
+    @app.route('/next')
+    def next():
+        press('n') # we can press any key and the cv2.waitkey function should respond
+        return "Next image"
    
     return app
 

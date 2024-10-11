@@ -44,7 +44,7 @@ class photolist():
 
         self.photocount = len(self.photos)
         self._save_to_file()
-        print (f"Found {self.photocount} photos")
+        return f"Found {self.photocount} photos"
     
     def random_photo(self):
         # this will return a tuple of file name and options
