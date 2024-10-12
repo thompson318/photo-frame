@@ -22,8 +22,13 @@ class MainWindow(QMainWindow):
         self.updatetimer = QTimer()
         self.updatetimer.timeout.connect(self.update_image)
         self.updatetimer.start(10*1000)
+        
+        self.checkupdatetimer = QTimer()
+        self.checkupdatetimer.timeout.connect(self.check_for_new_image)
+        self.checkupdatetimer.start(1000)
 
         self.update_image()
+        self.current_image = self.photolist.get_current_photo_name()
         self.show_image()
 
     def show_image(self):
@@ -39,8 +44,22 @@ class MainWindow(QMainWindow):
         border_size = [48, 40]
         print ("Time to update the image")
         photo = self.photolist.random_photo()
+        self.current_image = photo[0]
         print(f"got {photo[0]}")
         self.image_to_display = to_display(photo, frame_size, border_size)
         self.show_image()
+
+    def check_for_new_image(self):
+        if self.current_image == self.photolist.get_current_photo_name():
+            print (f"No change {self.current_image} == {self.photolist.get_current_photo_name()} ")
+        else:
+            frame_size = [1920, 1080]
+            border_size = [48, 40]
+            print ("Time to update the image")
+            photo = self.photolist.get_current_photo()
+            self.current_image = self.photolist.get_current_photo_name()
+            print (f"got {photo}")
+            self.image_to_display = to_display(photo, frame_size, border_size)
+            self.show_image()
 
 

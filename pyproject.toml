@@ -20,8 +20,8 @@ classifiers = [
 ]
 dependencies = [
     "Flask", 
-    "opencv-python",
-    "pyautogui",
+    "opencv-python-headless",
+    "PySide6",
 ]
 description = "A photo frame"
 dynamic = [

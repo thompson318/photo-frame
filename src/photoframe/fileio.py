@@ -48,4 +48,17 @@ class photolist():
     
     def random_photo(self):
         # this will return a tuple of file name and options
-        return random.choice(list(self.photos.items()))
+        current_photo = random.choice(list(self.photos.items()))
+        with open ('/dev/shm/current_photo.tmp', 'w') as fileout:
+            fileout.write(current_photo[0])
+        print (f"Setting image to {current_photo}")
+        return current_photo
+
+    def get_current_photo_name(self):
+        with open ('/dev/shm/current_photo.tmp', 'r') as filein:
+            current_photo = filein.read()
+        return current_photo
+
+    def get_current_photo(self):
+        current_photo = self.get_current_photo_name()
+        return (current_photo, self.photos[current_photo])

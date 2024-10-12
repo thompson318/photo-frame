@@ -8,10 +8,9 @@ from src.photoframe.fileio import photolist
 from src.photoframe.qdisplay import MainWindow
 
 
-def create_app(photo_instance, display_instance):
+def create_app(photo_instance):
     app = Flask(__name__)
     app.config['PHOTOS'] = photo_instance
-    app.config['DISPLAY'] = display_instance
  
     @app.route('/photos', methods=['GET'])
     def list_photos():
@@ -28,8 +27,9 @@ def create_app(photo_instance, display_instance):
 
     @app.route('/next')
     def next():
-        press('n') # we can press any key and the cv2.waitkey function should respond
-        return "Next image"
+
+        app.config['PHOTOS'].random_photo()
+        return "Skipping image"
    
     return app
 
@@ -45,6 +45,6 @@ if __name__ == "__main__":
    photos = photolist()
    p = Process(target=record_loop, args=(photos, None))
    p.start()  
-   app = create_app(photos, display)
+   app = create_app(photos)
    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5001)
    p.join()
