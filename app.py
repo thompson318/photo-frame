@@ -5,7 +5,7 @@ from pyautogui import press
 
 from src.photoframe.fileio import photolist 
 from src.photoframe.image_process import to_display 
-from src.photoframe.display import display 
+from src.photoframe.fb_display import fb_display 
 
 
 def create_app(photo_instance, display_instance):
@@ -44,13 +44,13 @@ def record_loop(photolist, display):
       print(f"got {photo[0]}")
       image_to_display = to_display(photo, frame_size, border_size)
       if image_to_display is not None:
-        display.show(image_to_display)
-        time.sleep(1)
+        display.show_photo(image_to_display)
+        time.sleep(10)
 
 
 if __name__ == "__main__":
    photos = photolist()
-   display = display(1.0)
+   display = fb_display()
    p = Process(target=record_loop, args=(photos,display))
    p.start()  
    app = create_app(photos, display)
