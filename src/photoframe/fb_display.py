@@ -8,7 +8,7 @@ class fb_display():
         h, w, c = 1080, 1920, 3
         self.fb = np.memmap('/dev/fb0', dtype='uint8',mode='w+', shape=(h,w,c))
 
-    def show_photo(self, photo)
+    def show_photo(self, photo):
         # photo = cv2.imread('102D3500_orig_DSC_0317.JPG')
         # Fill entire screen with blue - takes 29 ms on Raspi 4
         self.fb[:] = photo
