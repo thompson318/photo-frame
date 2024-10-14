@@ -13,3 +13,7 @@ class fb_display():
         # Fill entire screen with blue - takes 29 ms on Raspi 4
         self.fb[:] = photo
 
+    def destroy_image(self):
+        # destroy the image, preferably in an entertaining way
+        for _ in range 1080*1920 * 2:
+            self.fb[:] = photo

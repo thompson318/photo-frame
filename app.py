@@ -34,22 +34,37 @@ def create_app(photo_instance, display_instance):
         open('/dev/shm/photo_update.flag', 'w').close()
         return "Next image"
    
+    @app.route('/noshow')
+    def next():
+        open('/dev/shm/remove_photo.flag', 'w').close()
+        return "Image removed"
+   
     return app
 
 
 def record_loop(photolist, display):   
    frame_size = [1920, 1080]
    border_size = [74, 60]
+   display_time = 360 #in seconds
    while True:
       photo = photolist.random_photo()
       image_to_display = to_display(photo, frame_size, border_size)
       if image_to_display is not None:
           display.show_photo(image_to_display)
-      for _ in range (360):
-          if os.path.isfile('/dev/shm/photo_update.flag'):
-              os.remove('/dev/shm/photo_update.flag')
-              break
-          time.sleep(1)
+          with open('/dev/shm/current_photo.txt', 'w') as fileout:
+              fileout.write(photo[0])
+          for i in range (display_time):
+              if os.path.isfile('/dev/shm/photo_update.flag'):
+                  os.remove('/dev/shm/photo_update.flag')
+                  break
+              if os.path.isfile('/dev/shm/remove_photo.flag'):
+                  if i > 10 and i < display_time - 10:
+                      # we add a 10 second safety buffer to try and minimise the 
+                      # risk that the signal comes in late and we remove the 
+                      # wrong photo
+                      display.destroy_image()
+                      break
+              time.sleep(1)
 
 
 if __name__ == "__main__":
