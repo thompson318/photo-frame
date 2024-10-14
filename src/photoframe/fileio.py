@@ -13,7 +13,6 @@ class photolist():
             with open(filename, 'r') as filein:
                 self.photos = json.load(filein)
         except FileNotFoundError:
-            print(f"Failed to find {filename}, rescanning")
             self.scan_for_photos()
 
     def _save_to_file(self, filename = "./photo_list.json"):

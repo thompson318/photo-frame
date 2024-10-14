@@ -28,19 +28,16 @@ def to_display(photo, frame_size, border_size):
 
     filename = photo[0]
     image = cv2.imread(filename)
-    print (f"Read {filename}", end = "\n")
 
     region_of_interest = options.get("roi", None)
     if region_of_interest is not None:
         image = _crop(image, region_of_interest)
 
     crop_to_frame = options.get("crop", False)
-    print (f"Cropping to frame = {crop_to_frame}")
     image = _resize_and_crop(image, frame_size, border_size, crop_to_frame)
 
     height, width, channels = image.shape
     full_border = [ ( frame_size[0] - width ) // 2, ( frame_size[1] - height ) // 2 ]
-    print(f"We need a border this big {full_border}")
 
     bevel_size = [4, 4]
     image_size = [image.shape[1], image.shape[0]]
@@ -50,13 +47,10 @@ def to_display(photo, frame_size, border_size):
     image_left = frame_size[0] //2 - image_size[0] // 2
     #image_right = frame_size[0] // 2 + image_size[0] // 2
     image_right = image_left + image_size[0]
-    print (f"{image_top}, {image_bottom}, {image_left}, {image_right}")
 
     frame_colour = _make_frame_colour(image)
     frame = make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, image_right, frame_colour)
-    print(f"Image size = {frame.shape} type {frame.dtype}")
     frame = add_noise(frame, sigma = 5)
-    print(f"Image size = {image.shape} type {frame.dtype}")
     full_border = [ image_left, image_top ]
     #frame[full_border[1]:frame_size[1]-full_border[1], full_border[0]:frame_size[0]-full_border[0]] = image
     frame[image_top:image_bottom, image_left:image_right] = image
@@ -71,21 +65,18 @@ def _crop_to_aspect_ratio(image, target_aspect_ratio):
 
     aspect_ration_delta = abs(image_aspect_ratio - target_aspect_ratio)
     if aspect_ration_delta > 0.6: # if the aspect ratio difference is really big don't crop
-        print(f"Difference in aspect ratio {aspect_ration_delta} too big, not cropping")
         return image
 
     if image_aspect_ratio > target_aspect_ratio:
         finished_image_width = target_aspect_ratio * height
         amount_to_crop = int((width - finished_image_width) // 2)
-        print(f"We need to make it taller.  cropping {amount_to_crop} from {width}")
         image = image[:,amount_to_crop:width-amount_to_crop,:]
     elif image_aspect_ratio < target_aspect_ratio:
         finished_image_height = width / target_aspect_ratio
         amount_to_crop = int((height - finished_image_height) // 2)
-        print(f"We need to make it wider.  cropping {amount_to_crop} from {height}")
         image = image[amount_to_crop:height-amount_to_crop,:,:]
     else:
-        print("Aspect ratio good")
+        pass
     return image
 
 
@@ -120,14 +111,11 @@ def _resize_and_crop(image, frame_size,
     target_width = frame_size[0] - 2 * border_size[0]
     target_height = frame_size[1] - 2 * border_size[1]
     target_aspect_ratio = target_width / target_height
-    print (f"target width = {target_width}, target_height = {target_height} , target_aspect_ratio = {target_aspect_ratio}")
 
     if crop_to_frame:
         image = _crop_to_aspect_ratio(image, target_aspect_ratio)
 
     scaled_image = _resize(image, target_width, target_height)
-
-    print(f"Scaled to {scaled_image.shape}")
 
     height, width, channels = scaled_image.shape
     assert height <= target_height
@@ -152,8 +140,6 @@ def make_frame(frame_size, bevel_size, image_top, image_bottom, image_left, imag
     cv2.putText(blank_image,'ct', org = image_centre, fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 5, color=(0,0,255), thickness = 5)
     cv2.putText(blank_image,'bl', org = (bevel_left, bevel_top), fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 5, color=(0,0,255), thickness = 5)
     cv2.putText(blank_image,'br', org = (bevel_right, bevel_top), fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 5, color=(0,0,255), thickness = 5)
-    print(f"Top bevel = {top_bevel}")
-    print(f"centre = {image_centre}")
 
     # these bevels aren't quite right. We need to draw trapeziums to get 45 degree corners, not triangles.
     top_bev_corners = np.array([
@@ -197,10 +183,8 @@ def _make_frame_colour(image):
     the right hue but low saturation and brightness
     """
     random_colour = random.choice(image.reshape(-1, 3))
-    print (f"Random colour{random_colour}")
     red = random_colour[0]/255
     green = random_colour[1]/255
     blue = random_colour[2]/255 # or is that bgr?
-    print (f"Random colour{colorsys.rgb_to_hsv(red, green, blue)}")
     return random_colour
 

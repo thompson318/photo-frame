@@ -2,6 +2,7 @@ import time
 import os
 from flask import Flask, jsonify
 from multiprocessing import Process, Value
+import logging
 
 from src.photoframe.fileio import photolist 
 from src.photoframe.image_process import to_display 
@@ -10,6 +11,8 @@ from src.photoframe.fb_display import fb_display
 
 def create_app(photo_instance, display_instance):
     app = Flask(__name__)
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
     app.config['PHOTOS'] = photo_instance
     app.config['DISPLAY'] = display_instance
  
@@ -34,14 +37,11 @@ def create_app(photo_instance, display_instance):
     return app
 
 
-def record_loop(photolist, display):
-   
+def record_loop(photolist, display):   
    frame_size = [1920, 1080]
    border_size = [74, 60]
    while True:
       photo = photolist.random_photo()
-#      photo = ('./photos/DSC_0359.JPG', {"show":True, "roi":[2100,1600,3900,2560]})
-      print(f"got {photo[0]}")
       image_to_display = to_display(photo, frame_size, border_size)
       if image_to_display is not None:
           display.show_photo(image_to_display)
