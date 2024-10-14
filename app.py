@@ -1,4 +1,5 @@
 import time
+import os
 from flask import Flask, jsonify
 from multiprocessing import Process, Value
 
@@ -27,7 +28,7 @@ def create_app(photo_instance, display_instance):
 
     @app.route('/next')
     def next():
-        press('n') # we can press any key and the cv2.waitkey function should respond
+        open('/dev/shm/photo_update.flag', 'w').close()
         return "Next image"
    
     return app
@@ -43,8 +44,12 @@ def record_loop(photolist, display):
       print(f"got {photo[0]}")
       image_to_display = to_display(photo, frame_size, border_size)
       if image_to_display is not None:
-        display.show_photo(image_to_display)
-        time.sleep(10)
+          display.show_photo(image_to_display)
+      for _ in range (360):
+          if os.path.isfile('/dev/shm/photo_update.flag'):
+              os.remove('/dev/shm/photo_update.flag')
+              break
+          time.sleep(1)
 
 
 if __name__ == "__main__":
