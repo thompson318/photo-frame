@@ -1,7 +1,6 @@
 import time
 from flask import Flask, jsonify
 from multiprocessing import Process, Value
-from pyautogui import press
 
 from src.photoframe.fileio import photolist 
 from src.photoframe.image_process import to_display 
@@ -37,7 +36,7 @@ def create_app(photo_instance, display_instance):
 def record_loop(photolist, display):
    
    frame_size = [1920, 1080]
-   border_size = [48, 40]
+   border_size = [74, 60]
    while True:
       photo = photolist.random_photo()
 #      photo = ('./photos/DSC_0359.JPG', {"show":True, "roi":[2100,1600,3900,2560]})
