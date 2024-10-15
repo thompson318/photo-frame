@@ -20,9 +20,9 @@ class fb_display():
     def destroy_image(self):
         # destroy the image, preferably in an entertaining way
         patch_size = 100
-        for _ in range (self.height * self.channels / 1e3 ):
+        for _ in range (800):
            
             x_pix = random.randint(patch_size, self.width - 1 - patch_size)
-            y_pix = random.randint(patch_size, self.height - 1 - patch-size)
+            y_pix = random.randint(patch_size, self.height - 1 - patch_size)
             self.fb[y_pix - patch_size:y_pix + patch_size,
                     x_pix - patch_size:x_pix + patch_size, : ] = [0,0,0]
