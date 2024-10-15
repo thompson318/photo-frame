@@ -58,12 +58,14 @@ def record_loop(photolist, display):
                   os.remove('/dev/shm/photo_update.flag')
                   break
               if os.path.isfile('/dev/shm/remove_photo.flag'):
-                  if i > 10 and i < display_time - 10:
-                      # we add a 10 second safety buffer to try and minimise the 
+                  os.remove('/dev/shm/remove_photo.flag')
+                  if i > 5 and i < display_time - 5:
+                      # we add a 5 second safety buffer to try and minimise the 
                       # risk that the signal comes in late and we remove the 
                       # wrong photo
                       display.destroy_image()
-                      break
+                      #then need to actually remove it 
+                  break
               time.sleep(1)
 
 
