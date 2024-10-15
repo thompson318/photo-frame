@@ -35,7 +35,7 @@ def create_app(photo_instance, display_instance):
         return "Next image"
    
     @app.route('/noshow')
-    def next():
+    def remove():
         open('/dev/shm/remove_photo.flag', 'w').close()
         return "Image removed"
    
