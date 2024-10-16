@@ -35,7 +35,10 @@ def noise(width, height, ratio=1, sigma=100):
     h = int(height / ratio)
     w = int(width / ratio)
 
-    result = np.random.normal(mean, sigma, (w, h, MONOCHROME))
+    #result = np.random.normal(mean, sigma, (w, h, MONOCHROME))
+    # the zero mean normal distribution gives us some values that are 255 or 1 when we 
+    # convert to convert to unint below. Let's try again with a poisson dist.
+    result = np.random.poisson(lam = sigma, size = ((w, h, MONOCHROME)) 
     if ratio > 1:
         result = cv2.resize(result, dsize=(width, height), interpolation=cv2.INTER_LINEAR)
     result = result.reshape((width, height, MONOCHROME)).astype(np.uint8)
