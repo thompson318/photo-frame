@@ -1,6 +1,6 @@
 import time
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from multiprocessing import Process, Value
 import logging
 
@@ -33,7 +33,7 @@ def create_app(photo_instance, display_instance):
 
         return app.config['PHOTOS'].scan_for_photos()
 
-    @app.route('/next', methods=['POST']))
+    @app.route('/next', methods=['POST'])
     def next():
         open('/dev/shm/photo_update.flag', 'w').close()
         return "Next image"
