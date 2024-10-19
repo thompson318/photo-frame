@@ -22,19 +22,23 @@ def create_app(photo_instance, display_instance):
 
     @app.route('/', methods=['GET'])
     def index():
-        return "photo-server"
+        """
+        returns the main page, template/index.html
+        """
+        return render_template('index.html')
+
     
-    @app.route('/scan', methods=['GET'])
+    @app.route('/scan', methods=['POST'])
     def scan():
 
         return app.config['PHOTOS'].scan_for_photos()
 
-    @app.route('/next')
+    @app.route('/next', methods=['POST']))
     def next():
         open('/dev/shm/photo_update.flag', 'w').close()
         return "Next image"
    
-    @app.route('/noshow')
+    @app.route('/noshow', methods=['POST'])
     def remove():
         open('/dev/shm/remove_photo.flag', 'w').close()
         return "Image removed"
