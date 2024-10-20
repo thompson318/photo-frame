@@ -53,12 +53,18 @@ class photolist():
 
     def remove_current(self):
         self.current_photo[1]["show"] = False
-        self.photos[current_photo[0]] = self.current_photo[1]
+        self.photos[self.current_photo[0]] = self.current_photo[1]
         self._save_to_file()
         return
 
     def favourite_current(self):
+        self.current_photo[1]["favourite"] = True
+        self.photos[self.current_photo[0]] = self.current_photo[1]
+        self._save_to_file()
         return
 
     def crop_current(self):
+        self.current_photo[1]["set_roi_flag"] = True
+        self.photos[self.current_photo[0]] = self.current_photo[1]
+        self._save_to_file()
         return
