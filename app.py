@@ -43,6 +43,15 @@ def create_app(photo_instance, display_instance):
         open('/dev/shm/remove_photo.flag', 'w').close()
         return "Image removed"
    
+    @app.route('/markfavourite', methods=['POST'])
+    def favourite():
+        open('/dev/shm/favourite_photo.flag', 'w').close()
+        return "Favourite marked"
+
+    @app.route('/markforcrop', methods=['POST'])
+    def crop():
+        open('/dev/shm/crop_photo.flag', 'w').close()
+        return "Image mark to crop"
     return app
 
 
@@ -69,7 +78,15 @@ def record_loop(photolist, display):
                       # wrong photo
                       display.destroy_image()
                       #then need to actually remove it 
+                      photolist.remove_current()
                   break
+              if os.path.isfile('/dev/shm/favourite_photo.flag'):
+                  os.remove('/dev/shm/favourite_photo.flag')
+                  photolist.favourite_current()
+              if os.path.isfile('/dev/shm/crop_photo.flag'):
+                  os.remove('/dev/shm/crop_photo.flag')
+                  photolist.crop_current()
+
               time.sleep(1)
 
 

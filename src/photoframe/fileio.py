@@ -6,6 +6,7 @@ class photolist():
     def __init__(self):
         self.photos = {}
         self.load_from_file("./photo_list.json")
+        self.current_photo = None
 
     def load_from_file(self, filename = "./photo_list.json"):
         """Reads the file list from a file"""
@@ -47,4 +48,14 @@ class photolist():
     
     def random_photo(self):
         # this will return a tuple of file name and options
-        return random.choice(list(self.photos.items()))
+        self.current_photo = random.choice(list(self.photos.items()))
+        return self.current_photo
+
+    def remove_current(self):
+        return
+
+    def favourite_current(self):
+        return
+
+    def crop_current(self):
+        return
