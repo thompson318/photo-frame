@@ -1,6 +1,6 @@
 import time
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from multiprocessing import Process, Value
 import logging
 
@@ -22,34 +22,72 @@ def create_app(photo_instance, display_instance):
 
     @app.route('/', methods=['GET'])
     def index():
-        return "photo-server"
+        """
+        returns the main page, template/index.html
+        """
+        return render_template('index.html')
+
     
-    @app.route('/scan', methods=['GET'])
+    @app.route('/scan', methods=['POST'])
     def scan():
 
         return app.config['PHOTOS'].scan_for_photos()
 
-    @app.route('/next')
+    @app.route('/next', methods=['POST'])
     def next():
         open('/dev/shm/photo_update.flag', 'w').close()
         return "Next image"
    
+    @app.route('/noshow', methods=['POST'])
+    def remove():
+        open('/dev/shm/remove_photo.flag', 'w').close()
+        return "Image removed"
+   
+    @app.route('/markfavourite', methods=['POST'])
+    def favourite():
+        open('/dev/shm/favourite_photo.flag', 'w').close()
+        return "Favourite marked"
+
+    @app.route('/markforcrop', methods=['POST'])
+    def crop():
+        open('/dev/shm/crop_photo.flag', 'w').close()
+        return "Image mark to crop"
     return app
 
 
 def record_loop(photolist, display):   
    frame_size = [1920, 1080]
    border_size = [74, 60]
+   display_time = 360 #in seconds
    while True:
       photo = photolist.random_photo()
       image_to_display = to_display(photo, frame_size, border_size)
       if image_to_display is not None:
           display.show_photo(image_to_display)
-      for _ in range (360):
-          if os.path.isfile('/dev/shm/photo_update.flag'):
-              os.remove('/dev/shm/photo_update.flag')
-              break
-          time.sleep(1)
+          with open('/dev/shm/current_photo.txt', 'w') as fileout:
+              fileout.write(photo[0])
+          for i in range (display_time):
+              if os.path.isfile('/dev/shm/photo_update.flag'):
+                  os.remove('/dev/shm/photo_update.flag')
+                  break
+              if os.path.isfile('/dev/shm/remove_photo.flag'):
+                  os.remove('/dev/shm/remove_photo.flag')
+                  if i > 5 and i < display_time - 5:
+                      # we add a 5 second safety buffer to try and minimise the 
+                      # risk that the signal comes in late and we remove the 
+                      # wrong photo
+                      display.destroy_image()
+                      #then need to actually remove it 
+                      photolist.remove_current()
+                  break
+              if os.path.isfile('/dev/shm/favourite_photo.flag'):
+                  os.remove('/dev/shm/favourite_photo.flag')
+                  photolist.favourite_current()
+              if os.path.isfile('/dev/shm/crop_photo.flag'):
+                  os.remove('/dev/shm/crop_photo.flag')
+                  photolist.crop_current()
+
+              time.sleep(1)
 
 
 if __name__ == "__main__":
