@@ -52,6 +52,9 @@ class photolist():
         return self.current_photo
 
     def remove_current(self):
+        self.current_photo[1]["show"] = False
+        self.photos[current_photo[0]] = current_photo[1]
+        self._save_to_file()
         return
 
     def favourite_current(self):
