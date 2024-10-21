@@ -83,9 +83,15 @@ def record_loop(photolist, display):
               if os.path.isfile('/dev/shm/favourite_photo.flag'):
                   os.remove('/dev/shm/favourite_photo.flag')
                   photolist.favourite_current()
+                  display.show_favorite()
+                  time.sleep(3)
+                  display.show_photo(image_to_display)
               if os.path.isfile('/dev/shm/crop_photo.flag'):
                   os.remove('/dev/shm/crop_photo.flag')
                   photolist.crop_current()
+                  display.show_crop()
+                  time.sleep(3)
+                  display.show_photo(image_to_display)
 
               time.sleep(1)
 

@@ -26,3 +26,11 @@ class fb_display():
             y_pix = random.randint(patch_size, self.height - 1 - patch_size)
             self.fb[y_pix - patch_size:y_pix + patch_size,
                     x_pix - patch_size:x_pix + patch_size, : ] = [0,0,0]
+
+    def show_favorite(self):
+        # an indicator to show that we've favourited the image
+        self.fb[200:400, 300:500, :] = [255,0,0]
+
+    def show_crop(self):
+        # an indicator to show that we've marked the image for crop
+        self.fb[200:400, 300:500, :] = [0,255,0]
