@@ -11,7 +11,7 @@ class fb_display():
         self.channels = 3
         self.fb = np.memmap('/dev/fb0', dtype='uint8',mode='w+', 
                 shape=(self.height, self.width, self.channels))
-        self._set_up_emojis():
+        self._set_up_emojis()
 
     def show_photo(self, photo):
         # photo = cv2.imread('102D3500_orig_DSC_0317.JPG')
