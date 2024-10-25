@@ -49,13 +49,13 @@ class fb_display():
                     shape=(200,200,4), fill_value=[255,0,0,255], dtype = np.uint8)
 
         try:
-            self.crop_flag = np.load('crop_flag.npy')
+            self.crop_flag = np.load('emojis/crop_flag.npy')
         except FileNotFoundError:
             self.crop_flag = np.full(
                     shape=(200,200,4), fill_value=[0,255,0,255], dtype = np.uint8)
 
         try:
-            self.destroy = np.load('destroy.npy')
+            self.destroy = np.load('emojis/destroy.npy')
         except FileNotFoundError:
             self.destroy = np.full(
                     shape=(200,200,4), fill_value=[0,0,0,255], dtype = np.uint8)
