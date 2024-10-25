@@ -39,7 +39,7 @@ class fb_display():
             location = (x_pix, y_pix)
 
         self.fb[location[1] - height//2:location[1] + height//2,
-                location[0] - width//2:location[0] + width//2, : ] = patch[:,:,0:2]
+                location[0] - width//2:location[0] + width//2, : ] = patch[:,:,0:3]
 
     def _set_up_emojis(self):
         try:
