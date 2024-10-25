@@ -39,7 +39,22 @@ class fb_display():
             location = (x_pix, y_pix)
 
         self.fb[location[1] - height//2:location[1] + height//2,
-                location[0] - width//2:location[0] + width//2, : ] = patch[:,:,0:3]
+                location[0] - width//2:location[0] + width//2, : ] = _alpha_blend(patch, location)
+   
+    def _alpha_blend(self, patch, location):
+        height, width, channels = patch.shape
+        bg_patch = self.fb[location[1] - height//2:location[1] + height//2,
+                location[0] - width//2:location[0] + width//2, : ]
+        
+        bg_blue = np.multiply(bg_patch[:,:,0] , patch[:,:,3] / 255)
+        bg_green = np.multiply(bg_patch[:,:,1] , patch[:,:,3] / 255)
+        bg_red = np.multiply(bg_patch[:,:,2] , patch[:,:,3] / 255)
+    
+        fg_blue = np.multiply(patch[:,:,0] , 1 - patch[:,:,3] / 255)
+        fg_green = np.multiply(patch[:,:,1] , 1 - patch[:,:,3] / 255)
+        fg_red = np.multiply(patch[:,:,2] , 1 - patch[:,:,3] / 255)
+
+        return np.array([fg_blue + bg_blue, fg_green + bg_green , bg_red + fg_red])
 
     def _set_up_emojis(self):
         try:
