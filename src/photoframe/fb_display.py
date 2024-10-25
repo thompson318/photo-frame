@@ -39,7 +39,7 @@ class fb_display():
             location = (x_pix, y_pix)
 
         self.fb[location[1] - height//2:location[1] + height//2,
-                location[0] - width//2:location[0] + width//2, : ] = _alpha_blend(patch, location)
+                location[0] - width//2:location[0] + width//2, : ] = self._alpha_blend(patch, location)
    
     def _alpha_blend(self, patch, location):
         height, width, channels = patch.shape
