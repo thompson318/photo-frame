@@ -54,7 +54,7 @@ class fb_display():
         fg_green = np.multiply(patch[:,:,1] , 1 - patch[:,:,3] / 255)
         fg_red = np.multiply(patch[:,:,2] , 1 - patch[:,:,3] / 255)
 
-        return np.array([fg_blue + bg_blue, fg_green + bg_green , bg_red + fg_red])
+        return np.dstack([fg_blue + bg_blue, fg_green + bg_green , bg_red + fg_red])
 
     def _set_up_emojis(self):
         try:
