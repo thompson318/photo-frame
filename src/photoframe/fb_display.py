@@ -20,7 +20,7 @@ class fb_display():
 
     def destroy_image(self):
         # destroy the image, preferably in an entertaining way
-        for _ in range (800):
+        for _ in range (400):
             self.show_patch(self.destroy)
 
     def show_favorite(self):
@@ -46,13 +46,13 @@ class fb_display():
         bg_patch = self.fb[location[1] - height//2:location[1] + height//2,
                 location[0] - width//2:location[0] + width//2, : ]
         
-        bg_blue = np.multiply(bg_patch[:,:,0] , patch[:,:,3] / 255)
-        bg_green = np.multiply(bg_patch[:,:,1] , patch[:,:,3] / 255)
-        bg_red = np.multiply(bg_patch[:,:,2] , patch[:,:,3] / 255)
+        bg_blue = np.multiply(bg_patch[:,:,0] , 1- patch[:,:,3] / 255)
+        bg_green = np.multiply(bg_patch[:,:,1] , 1- patch[:,:,3] / 255)
+        bg_red = np.multiply(bg_patch[:,:,2] , 1-patch[:,:,3] / 255)
     
-        fg_blue = np.multiply(patch[:,:,0] , 1 - patch[:,:,3] / 255)
-        fg_green = np.multiply(patch[:,:,1] , 1 - patch[:,:,3] / 255)
-        fg_red = np.multiply(patch[:,:,2] , 1 - patch[:,:,3] / 255)
+        fg_blue = np.multiply(patch[:,:,0] ,  patch[:,:,3] / 255)
+        fg_green = np.multiply(patch[:,:,1] ,  patch[:,:,3] / 255)
+        fg_red = np.multiply(patch[:,:,2] ,  patch[:,:,3] / 255)
 
         return np.dstack([fg_blue + bg_blue, fg_green + bg_green , bg_red + fg_red])
 
@@ -74,6 +74,4 @@ class fb_display():
         except FileNotFoundError:
             self.destroy = np.full(
                     shape=(200,200,4), fill_value=[0,0,0,255], dtype = np.uint8)
-
-
 
