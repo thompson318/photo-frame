@@ -5,10 +5,10 @@ import json
 class photolist():
     def __init__(self):
         self.photos = {}
-        self.load_from_file("./photo_list.json")
+        self.load_from_file("../photo_list/photo_list.json")
         self.current_photo = None
 
-    def load_from_file(self, filename = "./photo_list.json"):
+    def load_from_file(self, filename = "../photo_list/photo_list.json"):
         """Reads the file list from a file"""
         try: 
             with open(filename, 'r') as filein:
@@ -16,10 +16,14 @@ class photolist():
         except FileNotFoundError:
             self.scan_for_photos()
 
-    def _save_to_file(self, filename = "./photo_list.json"):
+    def _save_to_file(self, filename = "../photo_list/photo_list.json"):
         """Saves the photolist to a file"""
         with open(filename, 'w') as fileout:
             json.dump(self.photos, fileout, indent=2)
+            try:
+                _ = subprocess.run(['./commit-changes.sh', ''])
+            except:
+                pass
 
 
     def scan_for_photos(self):
