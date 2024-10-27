@@ -1,15 +1,18 @@
 import time
-from flask import Flask, jsonify
+import os
+from flask import Flask, jsonify, render_template
 from multiprocessing import Process, Value
-from pyautogui import press
+import logging
 
 from src.photoframe.fileio import photolist 
 from src.photoframe.image_process import to_display 
-from src.photoframe.display import display 
+from src.photoframe.fb_display import fb_display 
 
 
 def create_app(photo_instance, display_instance):
     app = Flask(__name__)
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
     app.config['PHOTOS'] = photo_instance
     app.config['DISPLAY'] = display_instance
  
@@ -19,38 +22,83 @@ def create_app(photo_instance, display_instance):
 
     @app.route('/', methods=['GET'])
     def index():
-        return "photo-server"
+        """
+        returns the main page, template/index.html
+        """
+        return render_template('index.html')
+
     
-    @app.route('/scan', methods=['GET'])
+    @app.route('/scan', methods=['POST'])
     def scan():
 
         return app.config['PHOTOS'].scan_for_photos()
 
-    @app.route('/next')
+    @app.route('/next', methods=['POST'])
     def next():
-        press('n') # we can press any key and the cv2.waitkey function should respond
+        open('/dev/shm/photo_update.flag', 'w').close()
         return "Next image"
    
+    @app.route('/noshow', methods=['POST'])
+    def remove():
+        open('/dev/shm/remove_photo.flag', 'w').close()
+        return "Image removed"
+   
+    @app.route('/markfavourite', methods=['POST'])
+    def favourite():
+        open('/dev/shm/favourite_photo.flag', 'w').close()
+        return "Favourite marked"
+
+    @app.route('/markforcrop', methods=['POST'])
+    def crop():
+        open('/dev/shm/crop_photo.flag', 'w').close()
+        return "Image mark to crop"
     return app
 
 
-def record_loop(photolist, display):
-   
+def record_loop(photolist, display):   
    frame_size = [1920, 1080]
-   border_size = [48, 40]
+   border_size = [74, 60]
+   display_time = 360 #in seconds
    while True:
       photo = photolist.random_photo()
-#      photo = ('./photos/DSC_0359.JPG', {"show":True, "roi":[2100,1600,3900,2560]})
-      print(f"got {photo[0]}")
       image_to_display = to_display(photo, frame_size, border_size)
       if image_to_display is not None:
-        display.show(image_to_display)
-        time.sleep(1)
+          display.show_photo(image_to_display)
+          with open('/dev/shm/current_photo.txt', 'w') as fileout:
+              fileout.write(photo[0])
+          for i in range (display_time):
+              if os.path.isfile('/dev/shm/photo_update.flag'):
+                  os.remove('/dev/shm/photo_update.flag')
+                  break
+              if os.path.isfile('/dev/shm/remove_photo.flag'):
+                  os.remove('/dev/shm/remove_photo.flag')
+                  if i > 5 and i < display_time - 5:
+                      # we add a 5 second safety buffer to try and minimise the 
+                      # risk that the signal comes in late and we remove the 
+                      # wrong photo
+                      display.destroy_image()
+                      #then need to actually remove it 
+                      photolist.remove_current()
+                  break
+              if os.path.isfile('/dev/shm/favourite_photo.flag'):
+                  os.remove('/dev/shm/favourite_photo.flag')
+                  photolist.favourite_current()
+                  display.show_favorite()
+                  time.sleep(3)
+                  display.show_photo(image_to_display)
+              if os.path.isfile('/dev/shm/crop_photo.flag'):
+                  os.remove('/dev/shm/crop_photo.flag')
+                  photolist.crop_current()
+                  display.show_crop()
+                  time.sleep(3)
+                  display.show_photo(image_to_display)
+
+              time.sleep(1)
 
 
 if __name__ == "__main__":
    photos = photolist()
-   display = display(1.0)
+   display = fb_display()
    p = Process(target=record_loop, args=(photos,display))
    p.start()  
    app = create_app(photos, display)
